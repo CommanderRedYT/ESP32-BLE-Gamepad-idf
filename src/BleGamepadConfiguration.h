@@ -1,11 +1,12 @@
 #ifndef ESP32_BLE_GAMEPAD_CONFIG_H
 #define ESP32_BLE_GAMEPAD_CONFIG_H
 
+// system includes
+#include <cstdint>
+
 #define POSSIBLESPECIALBUTTONS 8
 #define POSSIBLEAXES 8
 #define POSSIBLESIMULATIONCONTROLS 5
-
-#include <Arduino.h>
 
 #define CONTROLLER_TYPE_JOYSTICK 0x04
 #define CONTROLLER_TYPE_GAMEPAD 0x05

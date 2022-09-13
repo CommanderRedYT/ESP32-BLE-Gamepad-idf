@@ -11,6 +11,8 @@
 #include "BleGamepad.h"
 #include "BleGamepadConfiguration.h"
 
+#include "utils.h"
+
 #if defined(CONFIG_ARDUHAL_ESP_LOG)
 #include "esp32-hal-log.h"
 #define LOG_TAG "BLEGamepad"
@@ -813,10 +815,14 @@ void BleGamepad::release(uint8_t b)
     }
 }
 
-uint8_t BleGamepad::specialButtonBitPosition(uint8_t b)
+tl::expected<uint8_t, std::string> BleGamepad::specialButtonBitPosition(uint8_t b)
 {
     if (b >= POSSIBLESPECIALBUTTONS)
-        throw std::invalid_argument("Index out of range");
+    {
+        // we do not use exceptions
+        // throw std::invalid_argument("Index out of range");
+        tl::make_unexpected("Index out of range");
+    }
     uint8_t bit = 0;
     for (int i = 0; i < b; i++)
     {
@@ -828,7 +834,16 @@ uint8_t BleGamepad::specialButtonBitPosition(uint8_t b)
 
 void BleGamepad::pressSpecialButton(uint8_t b)
 {
-    uint8_t button = specialButtonBitPosition(b);
+    uint8_t button;
+    if (const auto result = specialButtonBitPosition(b); !result)
+    {
+        ESP_LOGE(LOG_TAG, "%s", result.error().c_str());
+        return;
+    }
+    else
+    {
+        button = result.value();
+    }
     uint8_t bit = button % 8;
     uint8_t bitmask = (1 << bit);
 
@@ -847,7 +862,17 @@ void BleGamepad::pressSpecialButton(uint8_t b)
 
 void BleGamepad::releaseSpecialButton(uint8_t b)
 {
-    uint8_t button = specialButtonBitPosition(b);
+    uint8_t button;
+    if (const auto result = specialButtonBitPosition(b); !result)
+    {
+        ESP_LOGE(LOG_TAG, "%s", result.error().c_str());
+        return;
+    }
+    else
+    {
+        button = result.value();
+    }
+
     uint8_t bit = button % 8;
     uint8_t bitmask = (1 << bit);
 
@@ -1344,7 +1369,7 @@ void BleGamepad::taskServer(void *pvParameter)
     memcpy(customHidReportDescriptor, tempHidReportDescriptor, hidReportDescriptorSize);
 
     for (int i = 0; i < hidReportDescriptorSize; i++)
-        Serial.printf("%02x", customHidReportDescriptor[i]);
+        ESP_LOGI(LOG_TAG, "%02x", customHidReportDescriptor[i]);
 
     BleGamepadInstance->hid->reportMap((uint8_t *)customHidReportDescriptor, hidReportDescriptorSize);
     BleGamepadInstance->hid->startServices();
