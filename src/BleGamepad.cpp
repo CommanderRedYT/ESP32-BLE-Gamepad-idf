@@ -821,7 +821,7 @@ tl::expected<uint8_t, std::string> BleGamepad::specialButtonBitPosition(uint8_t 
     {
         // we do not use exceptions
         // throw std::invalid_argument("Index out of range");
-        tl::make_unexpected("Index out of range");
+        return tl::make_unexpected("Index out of range");
     }
     uint8_t bit = 0;
     for (int i = 0; i < b; i++)
