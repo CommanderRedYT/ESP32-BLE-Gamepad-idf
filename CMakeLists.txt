@@ -12,7 +12,7 @@ set(sources
 )
 
 set(dependencies
-    esp-nimble-cpp expected
+    esp-nimble-cpp driver arduino-esp32
 )
 
 idf_component_register(

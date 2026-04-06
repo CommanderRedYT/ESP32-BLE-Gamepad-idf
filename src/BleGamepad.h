@@ -11,7 +11,7 @@
 #include "NimBLECharacteristic.h"
 #include "BleGamepadConfiguration.h"
 
-#include <tl/expected.hpp>
+#include <expected>
 
 class BleGamepad
 {
@@ -45,7 +45,7 @@ private:
 
     void rawAction(uint8_t msg[], char msgSize);
     static void taskServer(void *pvParameter);
-    tl::expected<uint8_t, std::string> specialButtonBitPosition(uint8_t b);
+    std::expected<uint8_t, std::string> specialButtonBitPosition(uint8_t b);
 
 public:
     BleGamepad(std::string deviceName = "ESP32 BLE Gamepad", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);
